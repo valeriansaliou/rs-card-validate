@@ -95,7 +95,7 @@ impl Authenticate {
             }
         }
 
-        card_type
+        return card_type
     }
 
     fn is_length_valid(card_number: &'static str, card_type: &Type) -> bool {
