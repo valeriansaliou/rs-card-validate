@@ -3,6 +3,10 @@ rs-card-validate
 
 [![Build Status](https://travis-ci.org/valeriansaliou/rs-card-validate.svg?branch=master)](https://travis-ci.org/valeriansaliou/rs-card-validate)
 
+[Documentation](https://docs.rs/crate/card-validate)
+
+[Crate](https://crates.io/crates/card-validate)
+
 Detects and validates credit card numbers (type of card, number length and Luhn checksum).
 
 **Important notice: this is a fork of [@rprotasov](https://github.com/rprotasov/creditcardvalidator) initial work, to make it usable in Rust projects.**
