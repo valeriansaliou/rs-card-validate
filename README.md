@@ -11,7 +11,7 @@ Rust card validate detects and validates credit card numbers. Tells you the dete
 
 In your `Cargo.toml`:
 
-```
+```toml
 [dependencies]
 card_validate = "0.2"
 ```
