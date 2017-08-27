@@ -1,7 +1,18 @@
 [package]
-name = "card_authenticator"
-version = "0.1.0"
-authors = ["Richard Protasov <richardprotasov@gmail.com>"]
+name = "card-validate"
+version = "0.2.0"
+description = "Rust card validate detects and validates credit card numbers"
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/valeriansaliou/rs-card-validate"
+repository = "https://github.com/valeriansaliou/rs-card-validate.git"
+authors = [
+  "Richard Protasov <richardprotasov@gmail.com>",
+  "Valerian Saliou <valerian@valeriansaliou.name>"
+]
+
+[lib]
+name = "card_validate"
 
 [dependencies]
-regex = "0.1.41"
+regex = "0.2.2"

@@ -1,6 +1,6 @@
-extern crate card_authenticator;
+extern crate card_validate;
 
-use card_authenticator::Authenticate;
+use card_validate::Validate;
 
 fn visa_numbers() -> Vec<&'static str> {
     vec![
@@ -64,7 +64,7 @@ fn mixture() -> Vec<&'static str> {
 #[test]
 fn valid_card() {
     for number in mixture() {
-        let result = Authenticate::new(number);
+        let result = Validate::new(number);
         assert_eq!(result.valid, true);
     }
 }
@@ -72,7 +72,7 @@ fn valid_card() {
 #[test]
 fn valid_length() {
     for number in mixture() {
-        let result = Authenticate::new(number);
+        let result = Validate::new(number);
         assert_eq!(result.length_valid, true);
     }
 }
@@ -80,7 +80,7 @@ fn valid_length() {
 #[test]
 fn valid_luhn() {
     for number in mixture() {
-        let result = Authenticate::new(number);
+        let result = Validate::new(number);
         assert_eq!(result.luhn_valid, true);
     }
 }
@@ -88,7 +88,7 @@ fn valid_luhn() {
 #[test]
 fn correct_visa_card_name() {
     for number in visa_numbers() {
-        let result = Authenticate::new(number);
+        let result = Validate::new(number);
         assert_eq!(result.card_type.name(), "visa".to_string());
     }
 }
@@ -96,7 +96,7 @@ fn correct_visa_card_name() {
 #[test]
 fn correct_amex_card_name() {
     for number in amex_numbers() {
-        let result = Authenticate::new(number);
+        let result = Validate::new(number);
         assert_eq!(result.card_type.name(), "amex".to_string());
     }
 }
@@ -104,7 +104,7 @@ fn correct_amex_card_name() {
 #[test]
 fn correct_mastercard_card_name() {
     for number in mastercard_numbers() {
-        let result = Authenticate::new(number);
+        let result = Validate::new(number);
         assert_eq!(result.card_type.name(), "mastercard".to_string());
     }
 }
@@ -112,7 +112,7 @@ fn correct_mastercard_card_name() {
 #[test]
 fn correct_discover_card_name() {
     for number in discover_numbers() {
-        let result = Authenticate::new(number);
+        let result = Validate::new(number);
         assert_eq!(result.card_type.name(), "discover".to_string());
     }
 }
