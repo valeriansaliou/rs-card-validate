@@ -1,6 +1,6 @@
 [package]
 name = "card-validate"
-version = "0.2.0"
+version = "0.2.1"
 description = "Rust card validate detects and validates credit card numbers"
 readme = "README.md"
 license = "MIT"
@@ -15,4 +15,5 @@ authors = [
 name = "card_validate"
 
 [dependencies]
+lazy_static = "0.2"
 regex = "0.2.2"

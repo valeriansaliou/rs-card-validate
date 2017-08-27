@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate lazy_static;
 extern crate regex;
 
 use regex::Regex;
@@ -21,24 +23,40 @@ impl Type {
         }.to_string()
     }
 
-    pub fn pattern(&self) -> Regex {
-        Regex::new(match *self {
-            Type::Visa => r"^4+[0-9]+$",
-            Type::Discover => r"^[6011]+[0-9]+$",
-            Type::Amex => r"^[37]+[0-9]+$",
-            Type::MasterCard => r"^5+[1-5]+[0-9]+$",
-            Type::Other => r"^[0-9]+$",
-        }).unwrap()
+    pub fn pattern<'a>(&self) -> &'a Regex {
+        lazy_static! {
+            static ref VISA_PATTERN_REGEX: Regex = Regex::new(r"^4+[0-9]+$").unwrap();
+            static ref DISCOVER_PATTERN_REGEX: Regex = Regex::new(r"^[6011]+[0-9]+$").unwrap();
+            static ref AMEX_PATTERN_REGEX: Regex = Regex::new(r"^[37]+[0-9]+$").unwrap();
+            static ref MASTERCARD_PATTERN_REGEX: Regex = Regex::new(r"^5+[1-5]+[0-9]+$").unwrap();
+            static ref OTHER_PATTERN_REGEX: Regex = Regex::new(r"^[0-9]+$").unwrap();
+        }
+
+        match *self {
+            Type::Visa => &*VISA_PATTERN_REGEX,
+            Type::Discover => &*DISCOVER_PATTERN_REGEX,
+            Type::Amex => &*AMEX_PATTERN_REGEX,
+            Type::MasterCard => &*MASTERCARD_PATTERN_REGEX,
+            Type::Other => &*OTHER_PATTERN_REGEX,
+        }
     }
 
-    pub fn length(&self) -> Regex {
-        Regex::new(match *self {
-            Type::Visa => r"^[0-9]{13}|[0-9]{16}$",
-            Type::Discover => r"^[0-9]{16}$",
-            Type::Amex => r"^[0-9]{15}$",
-            Type::MasterCard => r"^[0-9]{16}$",
-            Type::Other => r"^[0-9]{12,19}$",
-        }).unwrap()
+    pub fn length<'a>(&self) -> &'a Regex {
+        lazy_static! {
+            static ref VISA_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{13}|[0-9]{16}$").unwrap();
+            static ref DISCOVER_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{16}$").unwrap();
+            static ref AMEX_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{15}$").unwrap();
+            static ref MASTERCARD_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{16}$").unwrap();
+            static ref OTHER_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{12,19}$").unwrap();
+        }
+
+        match *self {
+            Type::Visa => &*VISA_LENGTH_REGEX,
+            Type::Discover => &*DISCOVER_LENGTH_REGEX,
+            Type::Amex => &*AMEX_LENGTH_REGEX,
+            Type::MasterCard => &*MASTERCARD_LENGTH_REGEX,
+            Type::Other => &*OTHER_LENGTH_REGEX,
+        }
     }
 
     pub fn valid(&self) -> bool {
