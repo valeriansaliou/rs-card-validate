@@ -61,7 +61,7 @@ pub struct Validate {
 }
 
 impl Validate {
-    pub fn new(card_number: &'static str) -> Validate {
+    pub fn new(card_number: &str) -> Validate {
         let card_type = Validate::evaluate_type(&card_number);
         let length_valid = Validate::is_length_valid(&card_number, &card_type);
         let luhn_valid = Validate::is_luhn_valid(&card_number);
@@ -75,7 +75,7 @@ impl Validate {
         }
     }
 
-    fn evaluate_type(card_number: &'static str) -> Type {
+    fn evaluate_type(card_number: &str) -> Type {
         let mut card_type: Type = Type::Other;
 
         for card in Type::all() {
@@ -91,15 +91,15 @@ impl Validate {
         return card_type;
     }
 
-    fn is_length_valid(card_number: &'static str, card_type: &Type) -> bool {
+    fn is_length_valid(card_number: &str, card_type: &Type) -> bool {
         card_type.length().is_match(&card_number)
     }
 
-    fn is_luhn_valid(card_number: &'static str) -> bool {
+    fn is_luhn_valid(card_number: &str) -> bool {
         Validate::calculate_luhn(&card_number) % 10 == 0
     }
 
-    fn calculate_luhn(card_number: &'static str) -> i32 {
+    fn calculate_luhn(card_number: &str) -> i32 {
         let card_length = card_number.len();
         let mut digits = Vec::with_capacity(card_length);
         for digit in card_number.chars() {
