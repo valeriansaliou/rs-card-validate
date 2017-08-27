@@ -1,9 +1,13 @@
+//! card-validate detects and validates credit card numbers (type of card, number length and
+//! Luhn checksum).
+
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
 
 use regex::Regex;
 
+/// Card type. Maps recognized cards, and validates their pattern and length.
 pub enum Type {
     Visa,
     Discover,
@@ -71,6 +75,7 @@ impl Type {
     }
 }
 
+/// Card validation utility. Used to validate a provided card number (length and Luhn checksum).
 pub struct Validate {
     pub card_type: Type,
     pub valid: bool,
