@@ -3,7 +3,7 @@ rs-card-validate
 
 [![Build Status](https://travis-ci.org/valeriansaliou/rs-card-validate.svg?branch=master)](https://travis-ci.org/valeriansaliou/rs-card-validate)
 
-Rust card validate detects and validates credit card numbers. Tells you the detected credit card type and whether the number length and Luhn checksum are valid for the type of card.
+Detects and validates credit card numbers (type of card, number length and Luhn checksum).
 
 **Important notice: this is a fork of [@rprotasov](https://github.com/rprotasov/creditcardvalidator) initial work, to make it usable in Rust projects.**
 
@@ -13,7 +13,7 @@ In your `Cargo.toml`:
 
 ```toml
 [dependencies]
-card_validate = "0.2"
+card-validate = "0.2"
 ```
 
 ## Validate a number
