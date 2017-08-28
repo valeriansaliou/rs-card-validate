@@ -11,6 +11,25 @@ Detects and validates credit card numbers (type of card, number length and Luhn 
 
 **Important notice: this is a fork of [@rprotasov](https://github.com/rprotasov/creditcardvalidator) initial work, to make it usable in Rust projects.**
 
+## Supported providers
+
+**Debit cards:**
+
+* Visa Electron
+* Maestro
+* Forbrugsforeningen
+* Dankort
+
+**Credit cards:**
+
+* Visa
+* MasterCard
+* American Express
+* Diners Club
+* Discover
+* UnionPay
+* JCB
+
 ## Install library
 
 In your `Cargo.toml`:

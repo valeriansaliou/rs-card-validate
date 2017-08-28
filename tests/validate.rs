@@ -128,7 +128,7 @@ fn valid_mixture() -> Vec<&'static str> {
         dinersclub_numbers_valid(),
     ];
 
-    let mut mixture = Vec::with_capacity(20);
+    let mut mixture = Vec::new();
 
     for card_type in card_types {
         for number in card_type {
