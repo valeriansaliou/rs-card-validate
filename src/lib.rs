@@ -1,77 +1,135 @@
 //! card-validate detects and validates credit card numbers (type of card, number length and
 //! Luhn checksum).
 
+#![feature(inclusive_range, inclusive_range_syntax, range_contains)]
+
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
+extern crate luhnmod10;
 
+use std::ops::RangeInclusive;
 use regex::Regex;
 
 /// Card type. Maps recognized cards, and validates their pattern and length.
+#[derive(PartialEq)]
 pub enum Type {
+    // Debit
+    VisaElectron,
+    Maestro,
+    Forbrugsforeningen,
+    Dankort,
+
+    // Credit
     Visa,
-    Discover,
-    Amex,
     MasterCard,
+    Amex,
+    DinersClub,
+    Discover,
+    UnionPay,
+    JCB,
+
+    // Unknown
     Other,
+}
+
+/// Validate error. Maps possible validation errors (eg. card number format invalid).
+#[derive(Debug)]
+pub enum ValidateError {
+    InvalidFormat,
 }
 
 impl Type {
     pub fn name(&self) -> String {
         match *self {
+            Type::VisaElectron => "visaelectron",
+            Type::Maestro => "maestro",
+            Type::Forbrugsforeningen => "forbrugsforeningen",
+            Type::Dankort => "dankort",
             Type::Visa => "visa",
-            Type::Discover => "discover",
-            Type::Amex => "amex",
             Type::MasterCard => "mastercard",
+            Type::Amex => "amex",
+            Type::DinersClub => "dinersclub",
+            Type::Discover => "discover",
+            Type::UnionPay => "unionpay",
+            Type::JCB => "jcb",
             Type::Other => "other",
         }.to_string()
     }
 
     pub fn pattern<'a>(&self) -> &'a Regex {
+        // The card formats have been copied from: https://github.com/faaez/creditcardutils/\
+        //   blob/master/src/creditcardutils.coffee
         lazy_static! {
-            static ref VISA_PATTERN_REGEX: Regex = Regex::new(r"^4+[0-9]+$").unwrap();
-            static ref DISCOVER_PATTERN_REGEX: Regex = Regex::new(r"^[6011]+[0-9]+$").unwrap();
-            static ref AMEX_PATTERN_REGEX: Regex = Regex::new(r"^[37]+[0-9]+$").unwrap();
-            static ref MASTERCARD_PATTERN_REGEX: Regex = Regex::new(r"^5+[1-5]+[0-9]+$").unwrap();
+            static ref VISAELECTRON_PATTERN_REGEX: Regex = Regex::new(
+                r"^4(026|17500|405|508|844|91[37])").unwrap();
+            static ref MAESTRO_PATTERN_REGEX: Regex = Regex::new(
+                r"^(5(018|0[23]|[68])|6(39|7))").unwrap();
+            static ref FORBRUGSFORENINGEN_PATTERN_REGEX: Regex = Regex::new(r"^600").unwrap();
+            static ref DANKORT_PATTERN_REGEX: Regex = Regex::new(r"^5019").unwrap();
+            static ref VISA_PATTERN_REGEX: Regex = Regex::new(r"^4").unwrap();
+            static ref MASTERCARD_PATTERN_REGEX: Regex = Regex::new(r"^(5[1-5]|2[2-7])").unwrap();
+            static ref AMEX_PATTERN_REGEX: Regex = Regex::new(r"^3[47]").unwrap();
+            static ref DINERSCLUB_PATTERN_REGEX: Regex = Regex::new(r"^3[0689]").unwrap();
+            static ref DISCOVER_PATTERN_REGEX: Regex = Regex::new(r"^6([045]|22)").unwrap();
+            static ref UNIONPAY_PATTERN_REGEX: Regex = Regex::new(r"^(62|88)").unwrap();
+            static ref JCB_PATTERN_REGEX: Regex = Regex::new(r"^35").unwrap();
             static ref OTHER_PATTERN_REGEX: Regex = Regex::new(r"^[0-9]+$").unwrap();
         }
 
         match *self {
+            Type::VisaElectron => &*VISAELECTRON_PATTERN_REGEX,
+            Type::Maestro => &*MAESTRO_PATTERN_REGEX,
+            Type::Forbrugsforeningen => &*FORBRUGSFORENINGEN_PATTERN_REGEX,
+            Type::Dankort => &*DANKORT_PATTERN_REGEX,
             Type::Visa => &*VISA_PATTERN_REGEX,
-            Type::Discover => &*DISCOVER_PATTERN_REGEX,
-            Type::Amex => &*AMEX_PATTERN_REGEX,
             Type::MasterCard => &*MASTERCARD_PATTERN_REGEX,
+            Type::Amex => &*AMEX_PATTERN_REGEX,
+            Type::DinersClub => &*DINERSCLUB_PATTERN_REGEX,
+            Type::Discover => &*DISCOVER_PATTERN_REGEX,
+            Type::UnionPay => &*UNIONPAY_PATTERN_REGEX,
+            Type::JCB => &*JCB_PATTERN_REGEX,
             Type::Other => &*OTHER_PATTERN_REGEX,
         }
     }
 
-    pub fn length<'a>(&self) -> &'a Regex {
-        lazy_static! {
-            static ref VISA_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{13}|[0-9]{16}$").unwrap();
-            static ref DISCOVER_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{16}$").unwrap();
-            static ref AMEX_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{15}$").unwrap();
-            static ref MASTERCARD_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{16}$").unwrap();
-            static ref OTHER_LENGTH_REGEX: Regex = Regex::new(r"^[0-9]{12,19}$").unwrap();
-        }
-
+    pub fn length<'a>(&self) -> RangeInclusive<usize> {
         match *self {
-            Type::Visa => &*VISA_LENGTH_REGEX,
-            Type::Discover => &*DISCOVER_LENGTH_REGEX,
-            Type::Amex => &*AMEX_LENGTH_REGEX,
-            Type::MasterCard => &*MASTERCARD_LENGTH_REGEX,
-            Type::Other => &*OTHER_LENGTH_REGEX,
+            Type::VisaElectron => (16...16),
+            Type::Maestro => (12...19),
+            Type::Forbrugsforeningen => (16...16),
+            Type::Dankort => (16...16),
+            Type::Visa => (13...16),
+            Type::MasterCard => (16...16),
+            Type::Amex => (15...15),
+            Type::DinersClub => (14...14),
+            Type::Discover => (16...16),
+            Type::JCB => (16...16),
+            Type::UnionPay => (16...19),
+            Type::Other => (12...19),
         }
     }
 
     pub fn valid(&self) -> bool {
-        match *self {
-            Type::Other => false,
-            _ => true,
-        }
+        *self != Type::Other
     }
 
     fn all() -> Vec<Type> {
-        vec![Type::Visa, Type::Discover, Type::Amex, Type::MasterCard]
+        // Debit cards must come first, since they have more specific patterns than their\
+        //   credit-card equivalents.
+        vec![
+            Type::VisaElectron,
+            Type::Maestro,
+            Type::Forbrugsforeningen,
+            Type::Dankort,
+            Type::Visa,
+            Type::MasterCard,
+            Type::Amex,
+            Type::DinersClub,
+            Type::Discover,
+            Type::UnionPay,
+            Type::JCB,
+        ]
     }
 }
 
@@ -84,64 +142,41 @@ pub struct Validate {
 }
 
 impl Validate {
-    pub fn new(card_number: &str) -> Validate {
-        let card_type = Validate::evaluate_type(&card_number);
+    pub fn from(card_number: &str) -> Result<Validate, ValidateError> {
+        let card_type = Validate::evaluate_type(&card_number)?;
         let length_valid = Validate::is_length_valid(&card_number, &card_type);
         let luhn_valid = Validate::is_luhn_valid(&card_number);
         let valid = length_valid && luhn_valid && card_type.valid();
 
-        Validate {
+        Ok(Validate {
             card_type: card_type,
             valid: valid,
             length_valid: length_valid,
             luhn_valid: luhn_valid,
-        }
+        })
     }
 
-    fn evaluate_type(card_number: &str) -> Type {
-        let mut card_type: Type = Type::Other;
-
-        for card in Type::all() {
-            match card.pattern().is_match(&card_number) {
-                true => {
-                    card_type = card;
-                    break;
+    fn evaluate_type(card_number: &str) -> Result<Type, ValidateError> {
+        // Validate overall card number structure
+        if Type::Other.pattern().is_match(&card_number) {
+            for card in Type::all() {
+                // Validate brand-specific card number structure
+                if card.pattern().is_match(&card_number) {
+                    return Ok(card);
                 }
-                false => continue,
             }
-        }
 
-        return card_type;
+            Ok(Type::Other)
+        } else {
+            Err(ValidateError::InvalidFormat)
+        }
     }
 
     fn is_length_valid(card_number: &str, card_type: &Type) -> bool {
-        card_type.length().is_match(&card_number)
+        card_type.length().contains(card_number.len())
     }
 
     fn is_luhn_valid(card_number: &str) -> bool {
-        Validate::calculate_luhn(&card_number) % 10 == 0
-    }
-
-    fn calculate_luhn(card_number: &str) -> i32 {
-        let card_length = card_number.len();
-        let mut digits = Vec::with_capacity(card_length);
-        for digit in card_number.chars() {
-            digits.push(digit as u8);
-        }
-
-        let mut odd: bool = true;
-        let mut sum: i32 = 0;
-        for index in card_length..0 {
-            let digit = digits[index] as i32;
-
-            sum += match odd {
-                true => digit,
-                false => digit * digit,
-            };
-
-            odd = !odd;
-        }
-
-        return sum;
+        luhnmod10::valid(&card_number)
     }
 }

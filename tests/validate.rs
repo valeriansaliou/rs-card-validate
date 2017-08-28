@@ -2,7 +2,31 @@ extern crate card_validate;
 
 use card_validate::Validate;
 
-fn visa_numbers() -> Vec<&'static str> {
+fn visaelectron_numbers_valid() -> Vec<&'static str> {
+    vec![
+        "4917300800000000"
+    ]
+}
+
+fn maestro_numbers_valid() -> Vec<&'static str> {
+    vec![
+        "6759649826438453"
+    ]
+}
+
+fn forbrugsforeningen_numbers_valid() -> Vec<&'static str> {
+    vec![
+        "6007220000000004"
+    ]
+}
+
+fn dankort_numbers_valid() -> Vec<&'static str> {
+    vec![
+        "5019717010103742"
+    ]
+}
+
+fn visa_numbers_valid() -> Vec<&'static str> {
     vec![
         "4539571147647251",
         "4532983409238819",
@@ -12,7 +36,7 @@ fn visa_numbers() -> Vec<&'static str> {
     ]
 }
 
-fn amex_numbers() -> Vec<&'static str> {
+fn amex_numbers_valid() -> Vec<&'static str> {
     vec![
         "343380440754432",
         "377156543570043",
@@ -22,7 +46,7 @@ fn amex_numbers() -> Vec<&'static str> {
     ]
 }
 
-fn mastercard_numbers() -> Vec<&'static str> {
+fn mastercard_numbers_valid() -> Vec<&'static str> {
     vec![
         "5236313877109142",
         "5431604665471808",
@@ -32,7 +56,7 @@ fn mastercard_numbers() -> Vec<&'static str> {
     ]
 }
 
-fn discover_numbers() -> Vec<&'static str> {
+fn discover_numbers_valid() -> Vec<&'static str> {
     vec![
         "6011297718292606",
         "6011993225918523",
@@ -42,12 +66,66 @@ fn discover_numbers() -> Vec<&'static str> {
     ]
 }
 
-fn mixture() -> Vec<&'static str> {
+fn jcb_numbers_valid() -> Vec<&'static str> {
+    vec![
+        "3530111333300000",
+        "3566002020360505"
+    ]
+}
+
+fn unionpay_numbers_valid() -> Vec<&'static str> {
+    vec![
+        "6271136264806203568",
+        "6236265930072952775",
+        "6204679475679144515",
+        "6216657720782466507"
+    ]
+}
+
+fn dinersclub_numbers_valid() -> Vec<&'static str> {
+    vec![
+        "30569309025904",
+        "38520000023237",
+        "36700102000000",
+        "36148900647913"
+    ]
+}
+
+fn unknown_numbers_invalid() -> Vec<&'static str> {
+    vec![
+        "zduhehiudIHZHIUZHUI",
+        "0292DYYEFYFEFYEFEFIUH"
+    ]
+}
+
+fn known_numbers_invalid() -> Vec<&'static str> {
+    vec![
+        "424242424",
+        "4242424242424244242424242",
+        "523631387710914"
+    ]
+}
+
+fn numbers_invalid_luhn() -> Vec<&'static str> {
+    vec![
+        "5236313877109141",
+        "6011420510510995"
+    ]
+}
+
+fn valid_mixture() -> Vec<&'static str> {
     let card_types = vec![
-        visa_numbers(),
-        amex_numbers(),
-        mastercard_numbers(),
-        discover_numbers()
+        visaelectron_numbers_valid(),
+        maestro_numbers_valid(),
+        forbrugsforeningen_numbers_valid(),
+        dankort_numbers_valid(),
+        visa_numbers_valid(),
+        amex_numbers_valid(),
+        mastercard_numbers_valid(),
+        discover_numbers_valid(),
+        jcb_numbers_valid(),
+        unionpay_numbers_valid(),
+        dinersclub_numbers_valid(),
     ];
 
     let mut mixture = Vec::with_capacity(20);
@@ -63,56 +141,135 @@ fn mixture() -> Vec<&'static str> {
 
 #[test]
 fn valid_card() {
-    for number in mixture() {
-        let result = Validate::new(number);
+    for number in valid_mixture() {
+        let result = Validate::from(number).unwrap();
         assert_eq!(result.valid, true);
     }
 }
 
 #[test]
 fn valid_length() {
-    for number in mixture() {
-        let result = Validate::new(number);
+    for number in valid_mixture() {
+        let result = Validate::from(number).unwrap();
         assert_eq!(result.length_valid, true);
     }
 }
 
 #[test]
 fn valid_luhn() {
-    for number in mixture() {
-        let result = Validate::new(number);
+    for number in valid_mixture() {
+        let result = Validate::from(number).unwrap();
         assert_eq!(result.luhn_valid, true);
     }
 }
 
 #[test]
+fn known_invalid() {
+    for number in known_numbers_invalid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.valid, false);
+    }
+}
+
+#[test]
+fn unknown_invalid() {
+    for number in unknown_numbers_invalid() {
+        assert_eq!(Validate::from(number).is_err(), true);
+    }
+}
+
+#[test]
+fn invalid_luhn() {
+    for number in numbers_invalid_luhn() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.luhn_valid, false);
+    }
+}
+
+#[test]
+fn correct_visaelectron_card_name() {
+    for number in visaelectron_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "visaelectron".to_string());
+    }
+}
+
+#[test]
+fn correct_maestro_card_name() {
+    for number in maestro_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "maestro".to_string());
+    }
+}
+
+#[test]
+fn correct_forbrugsforeningen_card_name() {
+    for number in forbrugsforeningen_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "forbrugsforeningen".to_string());
+    }
+}
+
+#[test]
+fn correct_dankort_card_name() {
+    for number in dankort_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "dankort".to_string());
+    }
+}
+
+#[test]
 fn correct_visa_card_name() {
-    for number in visa_numbers() {
-        let result = Validate::new(number);
+    for number in visa_numbers_valid() {
+        let result = Validate::from(number).unwrap();
         assert_eq!(result.card_type.name(), "visa".to_string());
     }
 }
 
 #[test]
 fn correct_amex_card_name() {
-    for number in amex_numbers() {
-        let result = Validate::new(number);
+    for number in amex_numbers_valid() {
+        let result = Validate::from(number).unwrap();
         assert_eq!(result.card_type.name(), "amex".to_string());
     }
 }
 
 #[test]
 fn correct_mastercard_card_name() {
-    for number in mastercard_numbers() {
-        let result = Validate::new(number);
+    for number in mastercard_numbers_valid() {
+        let result = Validate::from(number).unwrap();
         assert_eq!(result.card_type.name(), "mastercard".to_string());
     }
 }
 
 #[test]
 fn correct_discover_card_name() {
-    for number in discover_numbers() {
-        let result = Validate::new(number);
+    for number in discover_numbers_valid() {
+        let result = Validate::from(number).unwrap();
         assert_eq!(result.card_type.name(), "discover".to_string());
+    }
+}
+
+#[test]
+fn correct_jcb_card_name() {
+    for number in jcb_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "jcb".to_string());
+    }
+}
+
+#[test]
+fn correct_unionpay_card_name() {
+    for number in unionpay_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "unionpay".to_string());
+    }
+}
+
+#[test]
+fn correct_dinersclub_card_name() {
+    for number in dinersclub_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "dinersclub".to_string());
     }
 }
