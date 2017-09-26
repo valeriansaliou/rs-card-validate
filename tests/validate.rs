@@ -1,6 +1,6 @@
 extern crate card_validate;
 
-use card_validate::Validate;
+use card_validate::{Validate, ValidateError};
 
 fn visaelectron_numbers_valid() -> Vec<&'static str> {
     vec![
@@ -91,10 +91,17 @@ fn dinersclub_numbers_valid() -> Vec<&'static str> {
     ]
 }
 
-fn unknown_numbers_invalid() -> Vec<&'static str> {
+fn gibberish_numbers_invalid() -> Vec<&'static str> {
     vec![
         "zduhehiudIHZHIUZHUI",
         "0292DYYEFYFEFYEFEFIUH"
+    ]
+}
+
+fn unknown_numbers_invalid() -> Vec<&'static str> {
+    vec![
+        "00002837743671762",
+        "1136283774"
     ]
 }
 
@@ -142,47 +149,35 @@ fn valid_mixture() -> Vec<&'static str> {
 #[test]
 fn valid_card() {
     for number in valid_mixture() {
-        let result = Validate::from(number).unwrap();
-        assert_eq!(result.valid, true);
+        assert_eq!(Validate::from(number).is_ok(), true);
     }
 }
 
 #[test]
-fn valid_length() {
-    for number in valid_mixture() {
-        let result = Validate::from(number).unwrap();
-        assert_eq!(result.length_valid, true);
-    }
-}
-
-#[test]
-fn valid_luhn() {
-    for number in valid_mixture() {
-        let result = Validate::from(number).unwrap();
-        assert_eq!(result.luhn_valid, true);
-    }
-}
-
-#[test]
-fn known_invalid() {
-    for number in known_numbers_invalid() {
-        let result = Validate::from(number).unwrap();
-        assert_eq!(result.valid, false);
+fn gibberish_invalid() {
+    for number in gibberish_numbers_invalid() {
+        assert_eq!(Validate::from(number) == Err(ValidateError::InvalidFormat), true);
     }
 }
 
 #[test]
 fn unknown_invalid() {
     for number in unknown_numbers_invalid() {
-        assert_eq!(Validate::from(number).is_err(), true);
+        assert_eq!(Validate::from(number) == Err(ValidateError::UnknownType), true);
+    }
+}
+
+#[test]
+fn known_invalid() {
+    for number in known_numbers_invalid() {
+        assert_eq!(Validate::from(number) == Err(ValidateError::InvalidLength), true);
     }
 }
 
 #[test]
 fn invalid_luhn() {
     for number in numbers_invalid_luhn() {
-        let result = Validate::from(number).unwrap();
-        assert_eq!(result.luhn_valid, false);
+        assert_eq!(Validate::from(number) == Err(ValidateError::InvalidLuhn), true);
     }
 }
 

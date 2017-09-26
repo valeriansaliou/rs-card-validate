@@ -34,9 +34,12 @@ pub enum Type {
 }
 
 /// Validate error. Maps possible validation errors (eg. card number format invalid).
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ValidateError {
     InvalidFormat,
+    InvalidLength,
+    InvalidLuhn,
+    UnknownType,
 }
 
 impl Type {
@@ -57,7 +60,7 @@ impl Type {
         }.to_string()
     }
 
-    pub fn pattern<'a>(&self) -> &'a Regex {
+    fn pattern<'a>(&self) -> &'a Regex {
         // The card formats have been copied from: https://github.com/faaez/creditcardutils/\
         //   blob/master/src/creditcardutils.coffee
         lazy_static! {
@@ -93,7 +96,7 @@ impl Type {
         }
     }
 
-    pub fn length<'a>(&self) -> RangeInclusive<usize> {
+    fn length<'a>(&self) -> RangeInclusive<usize> {
         match *self {
             Type::VisaElectron => (16...16),
             Type::Maestro => (12...19),
@@ -110,7 +113,7 @@ impl Type {
         }
     }
 
-    pub fn valid(&self) -> bool {
+    fn valid(&self) -> bool {
         *self != Type::Other
     }
 
@@ -134,25 +137,27 @@ impl Type {
 }
 
 /// Card validation utility. Used to validate a provided card number (length and Luhn checksum).
+#[derive(PartialEq)]
 pub struct Validate {
     pub card_type: Type,
-    pub valid: bool,
-    pub length_valid: bool,
-    pub luhn_valid: bool,
 }
 
 impl Validate {
     pub fn from(card_number: &str) -> Result<Validate, ValidateError> {
         let card_type = Validate::evaluate_type(&card_number)?;
-        let length_valid = Validate::is_length_valid(&card_number, &card_type);
-        let luhn_valid = Validate::is_luhn_valid(&card_number);
-        let valid = length_valid && luhn_valid && card_type.valid();
+
+        if card_type.valid() == false {
+            return Err(ValidateError::UnknownType);
+        }
+        if Validate::is_length_valid(&card_number, &card_type) == false {
+            return Err(ValidateError::InvalidLength);
+        }
+        if Validate::is_luhn_valid(&card_number) == false {
+            return Err(ValidateError::InvalidLuhn);
+        }
 
         Ok(Validate {
             card_type: card_type,
-            valid: valid,
-            length_valid: length_valid,
-            luhn_valid: luhn_valid,
         })
     }
 

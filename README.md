@@ -47,10 +47,9 @@ extern crate card_validate;
 use card_validate::Validate;
 
 let card_number = "5236313877109142";
-let result = Validate::from(card_number).expect("invalid card number");
 
-assert_eq!(result.card_type.name(), "mastercard".to_string());
-assert_eq!(result.valid, true);
-assert_eq!(result.length_valid, true);
-assert_eq!(result.luhn_valid, true);
+match Validate::from(card_number) {
+  Ok(result) => println!("Card type is: {}", result.card_type.name()),
+  Err(err) => println!("Card is invalid: {:?}", err)
+}
 ```
