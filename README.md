@@ -36,7 +36,7 @@ In your `Cargo.toml`:
 
 ```toml
 [dependencies]
-card-validate = "1.0"
+card-validate = "2.0"
 ```
 
 ## Validate a number
