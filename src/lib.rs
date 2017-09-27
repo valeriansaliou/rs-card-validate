@@ -11,6 +11,25 @@ extern crate luhnmod10;
 use std::ops::RangeInclusive;
 use regex::Regex;
 
+// The card formats have been copied from: https://github.com/faaez/creditcardutils/\
+//   blob/master/src/creditcardutils.coffee
+lazy_static! {
+    static ref VISAELECTRON_PATTERN_REGEX: Regex = Regex::new(
+        r"^4(026|17500|405|508|844|91[37])").unwrap();
+    static ref MAESTRO_PATTERN_REGEX: Regex = Regex::new(
+        r"^(5(018|0[23]|[68])|6(39|7))").unwrap();
+    static ref FORBRUGSFORENINGEN_PATTERN_REGEX: Regex = Regex::new(r"^600").unwrap();
+    static ref DANKORT_PATTERN_REGEX: Regex = Regex::new(r"^5019").unwrap();
+    static ref VISA_PATTERN_REGEX: Regex = Regex::new(r"^4").unwrap();
+    static ref MASTERCARD_PATTERN_REGEX: Regex = Regex::new(r"^(5[1-5]|2[2-7])").unwrap();
+    static ref AMEX_PATTERN_REGEX: Regex = Regex::new(r"^3[47]").unwrap();
+    static ref DINERSCLUB_PATTERN_REGEX: Regex = Regex::new(r"^3[0689]").unwrap();
+    static ref DISCOVER_PATTERN_REGEX: Regex = Regex::new(r"^6([045]|22)").unwrap();
+    static ref UNIONPAY_PATTERN_REGEX: Regex = Regex::new(r"^(62|88)").unwrap();
+    static ref JCB_PATTERN_REGEX: Regex = Regex::new(r"^35").unwrap();
+    static ref OTHER_PATTERN_REGEX: Regex = Regex::new(r"^[0-9]+$").unwrap();
+}
+
 /// Card type. Maps recognized cards, and validates their pattern and length.
 #[derive(PartialEq)]
 pub enum Type {
@@ -29,8 +48,8 @@ pub enum Type {
     UnionPay,
     JCB,
 
-    // Unknown
-    Other,
+    #[doc(hidden)]
+    __NonExhaustive,
 }
 
 /// Validate error. Maps possible validation errors (eg. card number format invalid).
@@ -40,6 +59,9 @@ pub enum ValidateError {
     InvalidLength,
     InvalidLuhn,
     UnknownType,
+
+    #[doc(hidden)]
+    __NonExhaustive,
 }
 
 impl Type {
@@ -56,30 +78,11 @@ impl Type {
             Type::Discover => "discover",
             Type::UnionPay => "unionpay",
             Type::JCB => "jcb",
-            Type::Other => "other",
+            _ => "other",
         }.to_string()
     }
 
     fn pattern<'a>(&self) -> &'a Regex {
-        // The card formats have been copied from: https://github.com/faaez/creditcardutils/\
-        //   blob/master/src/creditcardutils.coffee
-        lazy_static! {
-            static ref VISAELECTRON_PATTERN_REGEX: Regex = Regex::new(
-                r"^4(026|17500|405|508|844|91[37])").unwrap();
-            static ref MAESTRO_PATTERN_REGEX: Regex = Regex::new(
-                r"^(5(018|0[23]|[68])|6(39|7))").unwrap();
-            static ref FORBRUGSFORENINGEN_PATTERN_REGEX: Regex = Regex::new(r"^600").unwrap();
-            static ref DANKORT_PATTERN_REGEX: Regex = Regex::new(r"^5019").unwrap();
-            static ref VISA_PATTERN_REGEX: Regex = Regex::new(r"^4").unwrap();
-            static ref MASTERCARD_PATTERN_REGEX: Regex = Regex::new(r"^(5[1-5]|2[2-7])").unwrap();
-            static ref AMEX_PATTERN_REGEX: Regex = Regex::new(r"^3[47]").unwrap();
-            static ref DINERSCLUB_PATTERN_REGEX: Regex = Regex::new(r"^3[0689]").unwrap();
-            static ref DISCOVER_PATTERN_REGEX: Regex = Regex::new(r"^6([045]|22)").unwrap();
-            static ref UNIONPAY_PATTERN_REGEX: Regex = Regex::new(r"^(62|88)").unwrap();
-            static ref JCB_PATTERN_REGEX: Regex = Regex::new(r"^35").unwrap();
-            static ref OTHER_PATTERN_REGEX: Regex = Regex::new(r"^[0-9]+$").unwrap();
-        }
-
         match *self {
             Type::VisaElectron => &*VISAELECTRON_PATTERN_REGEX,
             Type::Maestro => &*MAESTRO_PATTERN_REGEX,
@@ -92,7 +95,7 @@ impl Type {
             Type::Discover => &*DISCOVER_PATTERN_REGEX,
             Type::UnionPay => &*UNIONPAY_PATTERN_REGEX,
             Type::JCB => &*JCB_PATTERN_REGEX,
-            Type::Other => &*OTHER_PATTERN_REGEX,
+            _ => &*OTHER_PATTERN_REGEX,
         }
     }
 
@@ -109,12 +112,8 @@ impl Type {
             Type::Discover => (16...16),
             Type::JCB => (16...16),
             Type::UnionPay => (16...19),
-            Type::Other => (12...19),
+            _ => (12...19),
         }
-    }
-
-    fn valid(&self) -> bool {
-        *self != Type::Other
     }
 
     fn all() -> Vec<Type> {
@@ -146,9 +145,6 @@ impl Validate {
     pub fn from(card_number: &str) -> Result<Validate, ValidateError> {
         let card_type = Validate::evaluate_type(&card_number)?;
 
-        if card_type.valid() == false {
-            return Err(ValidateError::UnknownType);
-        }
         if Validate::is_length_valid(&card_number, &card_type) == false {
             return Err(ValidateError::InvalidLength);
         }
@@ -163,7 +159,7 @@ impl Validate {
 
     fn evaluate_type(card_number: &str) -> Result<Type, ValidateError> {
         // Validate overall card number structure
-        if Type::Other.pattern().is_match(&card_number) {
+        if OTHER_PATTERN_REGEX.is_match(&card_number) {
             for card in Type::all() {
                 // Validate brand-specific card number structure
                 if card.pattern().is_match(&card_number) {
@@ -171,7 +167,7 @@ impl Validate {
                 }
             }
 
-            Ok(Type::Other)
+            Err(ValidateError::UnknownType)
         } else {
             Err(ValidateError::InvalidFormat)
         }
