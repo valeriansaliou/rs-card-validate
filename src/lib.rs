@@ -1,7 +1,7 @@
 //! card-validate detects and validates credit card numbers (type of card, number length and
 //! Luhn checksum).
 
-#![feature(inclusive_range, inclusive_range_syntax, range_contains)]
+#![feature(inclusive_range, range_contains)]
 
 #[macro_use]
 extern crate lazy_static;
@@ -101,18 +101,18 @@ impl Type {
 
     fn length<'a>(&self) -> RangeInclusive<usize> {
         match *self {
-            Type::VisaElectron => (16...16),
-            Type::Maestro => (12...19),
-            Type::Forbrugsforeningen => (16...16),
-            Type::Dankort => (16...16),
-            Type::Visa => (13...16),
-            Type::MasterCard => (16...16),
-            Type::Amex => (15...15),
-            Type::DinersClub => (14...14),
-            Type::Discover => (16...16),
-            Type::JCB => (16...16),
-            Type::UnionPay => (16...19),
-            _ => (12...19),
+            Type::VisaElectron => RangeInclusive { start: 16, end: 16 },
+            Type::Maestro => RangeInclusive { start: 12, end: 19 },
+            Type::Forbrugsforeningen => RangeInclusive { start: 16, end: 16 },
+            Type::Dankort => RangeInclusive { start: 16, end: 16 },
+            Type::Visa => RangeInclusive { start: 13, end: 16 },
+            Type::MasterCard => RangeInclusive { start: 16, end: 16 },
+            Type::Amex => RangeInclusive { start: 15, end: 15 },
+            Type::DinersClub => RangeInclusive { start: 14, end: 14 },
+            Type::Discover => RangeInclusive { start: 16, end: 16 },
+            Type::JCB => RangeInclusive { start: 16, end: 16 },
+            Type::UnionPay => RangeInclusive { start: 16, end: 19 },
+            _ => RangeInclusive { start: 12, end: 19 },
         }
     }
 
