@@ -1,14 +1,12 @@
 //! card-validate detects and validates credit card numbers (type of card, number length and
 //! Luhn checksum).
 
-#![feature(inclusive_range, range_contains)]
-
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
 extern crate luhnmod10;
 
-use std::ops::RangeInclusive;
+use std::ops::Range;
 use regex::Regex;
 
 // The card formats have been copied from: https://github.com/faaez/creditcardutils/\
@@ -99,20 +97,20 @@ impl Type {
         }
     }
 
-    fn length<'a>(&self) -> RangeInclusive<usize> {
+    fn length<'a>(&self) -> Range<usize> {
         match *self {
-            Type::VisaElectron => RangeInclusive { start: 16, end: 16 },
-            Type::Maestro => RangeInclusive { start: 12, end: 19 },
-            Type::Forbrugsforeningen => RangeInclusive { start: 16, end: 16 },
-            Type::Dankort => RangeInclusive { start: 16, end: 16 },
-            Type::Visa => RangeInclusive { start: 13, end: 16 },
-            Type::MasterCard => RangeInclusive { start: 16, end: 16 },
-            Type::Amex => RangeInclusive { start: 15, end: 15 },
-            Type::DinersClub => RangeInclusive { start: 14, end: 14 },
-            Type::Discover => RangeInclusive { start: 16, end: 16 },
-            Type::JCB => RangeInclusive { start: 16, end: 16 },
-            Type::UnionPay => RangeInclusive { start: 16, end: 19 },
-            _ => RangeInclusive { start: 12, end: 19 },
+            Type::VisaElectron => Range { start: 16, end: 16 },
+            Type::Maestro => Range { start: 12, end: 19 },
+            Type::Forbrugsforeningen => Range { start: 16, end: 16 },
+            Type::Dankort => Range { start: 16, end: 16 },
+            Type::Visa => Range { start: 13, end: 16 },
+            Type::MasterCard => Range { start: 16, end: 16 },
+            Type::Amex => Range { start: 15, end: 15 },
+            Type::DinersClub => Range { start: 14, end: 14 },
+            Type::Discover => Range { start: 16, end: 16 },
+            Type::JCB => Range { start: 16, end: 16 },
+            Type::UnionPay => Range { start: 16, end: 19 },
+            _ => Range { start: 12, end: 19 },
         }
     }
 
@@ -174,7 +172,12 @@ impl Validate {
     }
 
     fn is_length_valid(card_number: &str, card_type: &Type) -> bool {
-        card_type.length().contains(card_number.len())
+        // Notice: we don't use `contains()` yet as it's only available on nightly (as of v1.22)
+        // Also, `RangeInclusive` should have been used; we emulate its behavior with `Range`
+        let size = card_number.len();
+        let range = card_type.length();
+
+        size >= range.start && size <= range.end
     }
 
     fn is_luhn_valid(card_number: &str) -> bool {
