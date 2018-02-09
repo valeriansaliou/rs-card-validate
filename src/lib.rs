@@ -155,7 +155,7 @@ impl Validate {
         })
     }
 
-    fn evaluate_type(card_number: &str) -> Result<Type, ValidateError> {
+    pub fn evaluate_type(card_number: &str) -> Result<Type, ValidateError> {
         // Validate overall card number structure
         if OTHER_PATTERN_REGEX.is_match(&card_number) {
             for card in Type::all() {
@@ -171,7 +171,7 @@ impl Validate {
         }
     }
 
-    fn is_length_valid(card_number: &str, card_type: &Type) -> bool {
+    pub fn is_length_valid(card_number: &str, card_type: &Type) -> bool {
         // Notice: we don't use `contains()` yet as it's only available on nightly (as of v1.22)
         // Also, `RangeInclusive` should have been used; we emulate its behavior with `Range`
         let size = card_number.len();
@@ -180,7 +180,8 @@ impl Validate {
         size >= range.start && size <= range.end
     }
 
-    fn is_luhn_valid(card_number: &str) -> bool {
+    #[inline]
+    pub fn is_luhn_valid(card_number: &str) -> bool {
         luhnmod10::valid(&card_number)
     }
 }
