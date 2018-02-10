@@ -1,6 +1,6 @@
 [package]
 name = "card-validate"
-version = "2.1.5"
+version = "2.1.6"
 description = "Rust card validate detects and validates credit card numbers"
 readme = "README.md"
 license = "MIT"
