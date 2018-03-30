@@ -4,10 +4,11 @@
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
-extern crate luhnmod10;
 
 use std::ops::Range;
 use regex::Regex;
+
+mod luhn;
 
 // The card formats have been copied from: https://github.com/faaez/creditcardutils/\
 //   blob/master/src/creditcardutils.coffee
@@ -182,6 +183,6 @@ impl Validate {
 
     #[inline]
     pub fn is_luhn_valid(card_number: &str) -> bool {
-        luhnmod10::valid(&card_number)
+        luhn::valid(&card_number)
     }
 }
