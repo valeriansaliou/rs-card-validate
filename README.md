@@ -1,7 +1,7 @@
 rs-card-validate
 ================
 
-[![Build Status](https://travis-ci.org/valeriansaliou/rs-card-validate.svg?branch=master)](https://travis-ci.org/valeriansaliou/rs-card-validate)
+[![Build Status](https://travis-ci.org/valeriansaliou/rs-card-validate.svg?branch=master)](https://travis-ci.org/valeriansaliou/rs-card-validate) [![Dependency Status](https://deps.rs/repo/github/valeriansaliou/rs-card-validate/status.svg)](https://deps.rs/repo/github/valeriansaliou/rs-card-validate)
 
 [Documentation](https://docs.rs/crate/card-validate)
 
