@@ -1,7 +1,7 @@
 rs-card-validate
 ================
 
-[![Build Status](https://travis-ci.org/valeriansaliou/rs-card-validate.svg?branch=master)](https://travis-ci.org/valeriansaliou/rs-card-validate) [![Dependency Status](https://deps.rs/repo/github/valeriansaliou/rs-card-validate/status.svg)](https://deps.rs/repo/github/valeriansaliou/rs-card-validate)
+[![Build Status](https://travis-ci.org/valeriansaliou/rs-card-validate.svg?branch=master)](https://travis-ci.org/valeriansaliou/rs-card-validate) [![Dependency Status](https://deps.rs/repo/github/valeriansaliou/rs-card-validate/status.svg)](https://deps.rs/repo/github/valeriansaliou/rs-card-validate) [![Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/valeriansaliou)
 
 [Documentation](https://docs.rs/crate/card-validate)
 
