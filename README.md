@@ -11,6 +11,8 @@ Detects and validates credit card numbers (type of card, number length and Luhn 
 
 **Important notice: this is a complete rework of [@rprotasov](https://github.com/rprotasov/creditcardvalidator) initial work, supporting more card providers and containing important validation fixes.**
 
+**🇫🇷 Crafted in Brest, France.**
+
 ## Supported providers
 
 **Debit cards:**
