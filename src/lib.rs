@@ -5,18 +5,17 @@
 extern crate lazy_static;
 extern crate regex;
 
-use std::ops::Range;
 use regex::Regex;
+use std::ops::Range;
 
 mod luhn;
 
 // The card formats have been copied from: https://github.com/faaez/creditcardutils/\
 //   blob/master/src/creditcardutils.coffee
 lazy_static! {
-    static ref VISAELECTRON_PATTERN_REGEX: Regex = Regex::new(
-        r"^4(026|17500|405|508|844|91[37])").unwrap();
-    static ref MAESTRO_PATTERN_REGEX: Regex = Regex::new(
-        r"^(5(018|0[23]|[68])|6(39|7))").unwrap();
+    static ref VISAELECTRON_PATTERN_REGEX: Regex =
+        Regex::new(r"^4(026|17500|405|508|844|91[37])").unwrap();
+    static ref MAESTRO_PATTERN_REGEX: Regex = Regex::new(r"^(5(018|0[23]|[68])|6(39|7))").unwrap();
     static ref FORBRUGSFORENINGEN_PATTERN_REGEX: Regex = Regex::new(r"^600").unwrap();
     static ref DANKORT_PATTERN_REGEX: Regex = Regex::new(r"^5019").unwrap();
     static ref VISA_PATTERN_REGEX: Regex = Regex::new(r"^4").unwrap();
@@ -78,7 +77,8 @@ impl Type {
             Type::UnionPay => "unionpay",
             Type::JCB => "jcb",
             _ => "other",
-        }.to_string()
+        }
+        .to_string()
     }
 
     fn pattern<'a>(&self) -> &'a Regex {
