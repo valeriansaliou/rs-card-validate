@@ -21,6 +21,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust-toolchain }}
           components: rustfmt
+          override: true
 
       - name: Verify versions
         run: rustc --version && rustup --version && cargo --version
