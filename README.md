@@ -1,7 +1,7 @@
 rs-card-validate
 ================
 
-[![Test and Build](https://github.com/valeriansaliou/rs-card-validate/workflows/Test%20and%20Build/badge.svg?branch=master)](https://github.com/valeriansaliou/rs-card-validate/actions?query=workflow%3A%22Test+and+Build%22) [![Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/valeriansaliou)
+[![Test and Build](https://github.com/valeriansaliou/rs-card-validate/workflows/Test%20and%20Build/badge.svg?branch=master)](https://github.com/valeriansaliou/rs-card-validate/actions?query=workflow%3A%22Test+and+Build%22) [![Build and Release](https://github.com/valeriansaliou/rs-card-validate/workflows/Build%20and%20Release/badge.svg)](https://github.com/valeriansaliou/rs-card-validate/actions?query=workflow%3A%22Build+and+Release%22) [![Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/valeriansaliou)
 
 [Documentation](https://docs.rs/crate/card-validate)
 
