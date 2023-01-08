@@ -1,0 +1,28 @@
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+name: Build and Release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Verify versions
+        run: rustc --version && rustup --version && cargo --version
+
+      - name: Release package
+        run: cargo publish --no-verify --token ${CRATES_TOKEN}
+        env:
+          CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
