@@ -19,6 +19,7 @@ lazy_static! {
     static ref FORBRUGSFORENINGEN_PATTERN_REGEX: Regex = Regex::new(r"^600").unwrap();
     static ref DANKORT_PATTERN_REGEX: Regex = Regex::new(r"^5019").unwrap();
     static ref VISA_PATTERN_REGEX: Regex = Regex::new(r"^4").unwrap();
+    static ref MIR_PATTERN_REGEX: Regex = Regex::new(r"^220[0-4]").unwrap();
     static ref MASTERCARD_PATTERN_REGEX: Regex = Regex::new(r"^(5[1-5]|2[2-7])").unwrap();
     static ref AMEX_PATTERN_REGEX: Regex = Regex::new(r"^3[47]").unwrap();
     static ref DINERSCLUB_PATTERN_REGEX: Regex = Regex::new(r"^3[0689]").unwrap();
@@ -39,6 +40,7 @@ pub enum Type {
 
     // Credit
     Visa,
+    MIR,
     MasterCard,
     Amex,
     DinersClub,
@@ -70,6 +72,7 @@ impl Type {
             Type::Forbrugsforeningen => "forbrugsforeningen",
             Type::Dankort => "dankort",
             Type::Visa => "visa",
+            Type::MIR => "mir",
             Type::MasterCard => "mastercard",
             Type::Amex => "amex",
             Type::DinersClub => "dinersclub",
@@ -88,6 +91,7 @@ impl Type {
             Type::Forbrugsforeningen => &*FORBRUGSFORENINGEN_PATTERN_REGEX,
             Type::Dankort => &*DANKORT_PATTERN_REGEX,
             Type::Visa => &*VISA_PATTERN_REGEX,
+            Type::MIR => &*MIR_PATTERN_REGEX,
             Type::MasterCard => &*MASTERCARD_PATTERN_REGEX,
             Type::Amex => &*AMEX_PATTERN_REGEX,
             Type::DinersClub => &*DINERSCLUB_PATTERN_REGEX,
@@ -105,6 +109,7 @@ impl Type {
             Type::Forbrugsforeningen => Range { start: 16, end: 16 },
             Type::Dankort => Range { start: 16, end: 16 },
             Type::Visa => Range { start: 13, end: 16 },
+            Type::MIR => Range { start: 16, end: 19 },
             Type::MasterCard => Range { start: 16, end: 16 },
             Type::Amex => Range { start: 15, end: 15 },
             Type::DinersClub => Range { start: 14, end: 14 },
@@ -124,6 +129,7 @@ impl Type {
             Type::Forbrugsforeningen,
             Type::Dankort,
             Type::Visa,
+            Type::MIR,
             Type::MasterCard,
             Type::Amex,
             Type::DinersClub,
