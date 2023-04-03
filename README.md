@@ -25,6 +25,7 @@ Detects and validates credit card numbers (type of card, number length and Luhn 
 **Credit cards:**
 
 * Visa
+* MIR
 * MasterCard
 * American Express
 * Diners Club
@@ -38,7 +39,7 @@ In your `Cargo.toml`:
 
 ```toml
 [dependencies]
-card-validate = "2.1"
+card-validate = "2.3"
 ```
 
 ## Validate a number

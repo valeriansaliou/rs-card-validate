@@ -62,6 +62,10 @@ fn jcb_numbers_valid() -> Vec<&'static str> {
     vec!["3530111333300000", "3566002020360505"]
 }
 
+fn mir_numbers_valid() -> Vec<&'static str> {
+    vec!["2200150220654583"]
+}
+
 fn unionpay_numbers_valid() -> Vec<&'static str> {
     vec![
         "6271136264806203568",
@@ -238,6 +242,14 @@ fn correct_jcb_card_name() {
     for number in jcb_numbers_valid() {
         let result = Validate::from(number).unwrap();
         assert_eq!(result.card_type.name(), "jcb".to_string());
+    }
+}
+
+#[test]
+fn correct_mir_card_name() {
+    for number in mir_numbers_valid() {
+        let result = Validate::from(number).unwrap();
+        assert_eq!(result.card_type.name(), "mir".to_string());
     }
 }
 
