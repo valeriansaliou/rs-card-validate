@@ -25,9 +25,9 @@ Detects and validates credit card numbers (type of card, number length and Luhn 
 **Credit cards:**
 
 * Visa
-* MIR
 * MasterCard
 * American Express
+* MIR
 * Diners Club
 * Discover
 * UnionPay

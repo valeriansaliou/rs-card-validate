@@ -1,5 +1,2 @@
 target
 Cargo.lock
-
-# Jetbrains products
-./.idea
