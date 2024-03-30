@@ -7,19 +7,20 @@
 pub fn valid(number: &str) -> bool {
     let mut checksum = 0;
 
-    let mut iter = number.chars().rev();
-    loop {
-        match iter.next() {
-            Some(c) => checksum += checksum_modifier_odd(c),
-            None => break,
-        }
-        match iter.next() {
-            Some(c) => checksum += checksum_modifier_even(c),
-            None => break,
+    let r_chars = number.chars().rev();
+    let range = 1..=number.chars().count();
+    let iter = range.zip(r_chars);
+
+    for (i, c) in iter {
+        let is_odd = i % 2 == 1;
+        if is_odd {
+            checksum += checksum_modifier_odd(c);
+        } else {
+            checksum += checksum_modifier_even(c);
         }
     }
 
-    return checksum % 10 == 0;
+    checksum % 10 == 0
 }
 
 fn checksum_modifier_odd(c: char) -> u32 {
@@ -30,9 +31,9 @@ fn checksum_modifier_even(c: char) -> u32 {
     let n = numeric_char_to_u32(c);
     let d = n * 2;
     if d <= 9 {
-        return d;
+        d
     } else {
-        return d - 9;
+        d - 9
     }
 }
 

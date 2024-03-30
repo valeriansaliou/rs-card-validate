@@ -31,6 +31,7 @@ lazy_static! {
 
 /// Card type. Maps recognized cards, and validates their pattern and length.
 #[derive(PartialEq)]
+#[non_exhaustive]
 pub enum Type {
     // Debit
     VisaElectron,
@@ -47,21 +48,16 @@ pub enum Type {
     Discover,
     UnionPay,
     JCB,
-
-    #[doc(hidden)]
-    __NonExhaustive,
 }
 
 /// Validate error. Maps possible validation errors (eg. card number format invalid).
 #[derive(Debug, PartialEq)]
+#[non_exhaustive]
 pub enum ValidateError {
     InvalidFormat,
     InvalidLength,
     InvalidLuhn,
     UnknownType,
-
-    #[doc(hidden)]
-    __NonExhaustive,
 }
 
 impl Type {
@@ -79,30 +75,28 @@ impl Type {
             Type::Discover => "discover",
             Type::UnionPay => "unionpay",
             Type::JCB => "jcb",
-            _ => "other",
         }
         .to_string()
     }
 
     fn pattern<'a>(&self) -> &'a Regex {
         match *self {
-            Type::VisaElectron => &*VISAELECTRON_PATTERN_REGEX,
-            Type::Maestro => &*MAESTRO_PATTERN_REGEX,
-            Type::Forbrugsforeningen => &*FORBRUGSFORENINGEN_PATTERN_REGEX,
-            Type::Dankort => &*DANKORT_PATTERN_REGEX,
-            Type::Visa => &*VISA_PATTERN_REGEX,
-            Type::MIR => &*MIR_PATTERN_REGEX,
-            Type::MasterCard => &*MASTERCARD_PATTERN_REGEX,
-            Type::Amex => &*AMEX_PATTERN_REGEX,
-            Type::DinersClub => &*DINERSCLUB_PATTERN_REGEX,
-            Type::Discover => &*DISCOVER_PATTERN_REGEX,
-            Type::UnionPay => &*UNIONPAY_PATTERN_REGEX,
-            Type::JCB => &*JCB_PATTERN_REGEX,
-            _ => &*OTHER_PATTERN_REGEX,
+            Type::VisaElectron => &VISAELECTRON_PATTERN_REGEX,
+            Type::Maestro => &MAESTRO_PATTERN_REGEX,
+            Type::Forbrugsforeningen => &FORBRUGSFORENINGEN_PATTERN_REGEX,
+            Type::Dankort => &DANKORT_PATTERN_REGEX,
+            Type::Visa => &VISA_PATTERN_REGEX,
+            Type::MIR => &MIR_PATTERN_REGEX,
+            Type::MasterCard => &MASTERCARD_PATTERN_REGEX,
+            Type::Amex => &AMEX_PATTERN_REGEX,
+            Type::DinersClub => &DINERSCLUB_PATTERN_REGEX,
+            Type::Discover => &DISCOVER_PATTERN_REGEX,
+            Type::UnionPay => &UNIONPAY_PATTERN_REGEX,
+            Type::JCB => &JCB_PATTERN_REGEX,
         }
     }
 
-    fn length<'a>(&self) -> Range<usize> {
+    fn length(&self) -> Range<usize> {
         match *self {
             Type::VisaElectron => Range { start: 16, end: 16 },
             Type::Maestro => Range { start: 12, end: 19 },
@@ -116,7 +110,6 @@ impl Type {
             Type::Discover => Range { start: 16, end: 16 },
             Type::JCB => Range { start: 16, end: 16 },
             Type::UnionPay => Range { start: 16, end: 19 },
-            _ => Range { start: 12, end: 19 },
         }
     }
 
@@ -148,26 +141,24 @@ pub struct Validate {
 
 impl Validate {
     pub fn from(card_number: &str) -> Result<Validate, ValidateError> {
-        let card_type = Validate::evaluate_type(&card_number)?;
+        let card_type = Validate::evaluate_type(card_number)?;
 
-        if Validate::is_length_valid(&card_number, &card_type) == false {
+        if !Validate::is_length_valid(card_number, &card_type) {
             return Err(ValidateError::InvalidLength);
         }
-        if Validate::is_luhn_valid(&card_number) == false {
+        if !Validate::is_luhn_valid(card_number) {
             return Err(ValidateError::InvalidLuhn);
         }
 
-        Ok(Validate {
-            card_type: card_type,
-        })
+        Ok(Validate { card_type })
     }
 
     pub fn evaluate_type(card_number: &str) -> Result<Type, ValidateError> {
         // Validate overall card number structure
-        if OTHER_PATTERN_REGEX.is_match(&card_number) {
+        if OTHER_PATTERN_REGEX.is_match(card_number) {
             for card in Type::all() {
                 // Validate brand-specific card number structure
-                if card.pattern().is_match(&card_number) {
+                if card.pattern().is_match(card_number) {
                     return Ok(card);
                 }
             }
@@ -189,6 +180,6 @@ impl Validate {
 
     #[inline]
     pub fn is_luhn_valid(card_number: &str) -> bool {
-        luhn::valid(&card_number)
+        luhn::valid(card_number)
     }
 }
