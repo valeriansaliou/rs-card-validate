@@ -133,6 +133,26 @@ impl Type {
     }
 }
 
+impl ToString for Type {
+    fn to_string(&self) -> String {
+        match self {
+            Type::VisaElectron => "VisaElectron",
+            Type::Maestro => "Maestro",
+            Type::Forbrugsforeningen => "Forbrugsforeningen",
+            Type::Dankort => "Dankort",
+            Type::Visa => "Visa",
+            Type::MIR => "MIR",
+            Type::MasterCard => "MasterCard",
+            Type::Amex => "Amex",
+            Type::DinersClub => "DinersClub",
+            Type::Discover => "Discover",
+            Type::UnionPay => "UnionPay",
+            Type::JCB => "JCB",
+        }
+        .to_string()
+    }
+}
+
 /// Card validation utility. Used to validate a provided card number (length and Luhn checksum).
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Validate {
