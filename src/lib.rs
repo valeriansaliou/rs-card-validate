@@ -113,10 +113,10 @@ impl Type {
         }
     }
 
-    fn all() -> Vec<Type> {
-        // Debit cards must come first, since they have more specific patterns than their\
-        //   credit-card equivalents.
-        vec![
+    const fn all() -> &'static [Type] {
+        // Debit cards must come first, since they have more specific patterns than their
+        // credit-card equivalents.
+        &[
             Type::VisaElectron,
             Type::Maestro,
             Type::Forbrugsforeningen,
@@ -179,7 +179,7 @@ impl Validate {
             for card in Type::all() {
                 // Validate brand-specific card number structure
                 if card.pattern().is_match(card_number) {
-                    return Ok(card);
+                    return Ok(*card);
                 }
             }
 
