@@ -23,10 +23,12 @@ pub fn valid(number: &str) -> bool {
     checksum % 10 == 0
 }
 
+#[inline(always)]
 fn checksum_modifier_odd(c: char) -> u32 {
     numeric_char_to_u32(c)
 }
 
+#[inline(always)]
 fn checksum_modifier_even(c: char) -> u32 {
     let n = numeric_char_to_u32(c);
     let d = n * 2;
@@ -37,6 +39,7 @@ fn checksum_modifier_even(c: char) -> u32 {
     }
 }
 
+#[inline(always)]
 fn numeric_char_to_u32(c: char) -> u32 {
     (c as u32) - ('0' as u32)
 }
