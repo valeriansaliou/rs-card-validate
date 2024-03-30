@@ -176,7 +176,7 @@ impl Validate {
         range.contains(&size)
     }
 
-    #[inline]
+    #[inline(always)]
     pub fn is_luhn_valid(card_number: &str) -> bool {
         luhn::valid(card_number)
     }
