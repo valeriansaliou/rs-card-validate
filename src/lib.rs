@@ -6,7 +6,7 @@ extern crate lazy_static;
 extern crate regex;
 
 use regex::Regex;
-use std::ops::Range;
+use std::ops::RangeInclusive;
 
 mod luhn;
 
@@ -62,7 +62,7 @@ pub enum ValidateError {
 
 impl Type {
     pub fn name(&self) -> String {
-        match *self {
+        match self {
             Type::VisaElectron => "visaelectron",
             Type::Maestro => "maestro",
             Type::Forbrugsforeningen => "forbrugsforeningen",
@@ -79,8 +79,8 @@ impl Type {
         .to_string()
     }
 
-    fn pattern<'a>(&self) -> &'a Regex {
-        match *self {
+    fn pattern(&self) -> &Regex {
+        match self {
             Type::VisaElectron => &VISAELECTRON_PATTERN_REGEX,
             Type::Maestro => &MAESTRO_PATTERN_REGEX,
             Type::Forbrugsforeningen => &FORBRUGSFORENINGEN_PATTERN_REGEX,
@@ -96,20 +96,20 @@ impl Type {
         }
     }
 
-    fn length(&self) -> Range<usize> {
-        match *self {
-            Type::VisaElectron => Range { start: 16, end: 16 },
-            Type::Maestro => Range { start: 12, end: 19 },
-            Type::Forbrugsforeningen => Range { start: 16, end: 16 },
-            Type::Dankort => Range { start: 16, end: 16 },
-            Type::Visa => Range { start: 13, end: 16 },
-            Type::MIR => Range { start: 16, end: 19 },
-            Type::MasterCard => Range { start: 16, end: 16 },
-            Type::Amex => Range { start: 15, end: 15 },
-            Type::DinersClub => Range { start: 14, end: 14 },
-            Type::Discover => Range { start: 16, end: 16 },
-            Type::JCB => Range { start: 16, end: 16 },
-            Type::UnionPay => Range { start: 16, end: 19 },
+    fn length(&self) -> RangeInclusive<usize> {
+        match self {
+            Type::VisaElectron => 16..=16,
+            Type::Maestro => 12..=19,
+            Type::Forbrugsforeningen => 16..=16,
+            Type::Dankort => 16..=16,
+            Type::Visa => 13..=16,
+            Type::MIR => 16..=19,
+            Type::MasterCard => 16..=16,
+            Type::Amex => 15..=15,
+            Type::DinersClub => 14..=14,
+            Type::Discover => 16..=16,
+            Type::JCB => 16..=16,
+            Type::UnionPay => 16..=19,
         }
     }
 
@@ -170,12 +170,10 @@ impl Validate {
     }
 
     pub fn is_length_valid(card_number: &str, card_type: &Type) -> bool {
-        // Notice: we don't use `contains()` yet as it's only available on nightly (as of v1.22)
-        // Also, `RangeInclusive` should have been used; we emulate its behavior with `Range`
         let size = card_number.len();
         let range = card_type.length();
 
-        size >= range.start && size <= range.end
+        range.contains(&size)
     }
 
     #[inline]
