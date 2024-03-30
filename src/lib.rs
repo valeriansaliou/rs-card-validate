@@ -30,7 +30,7 @@ lazy_static! {
 }
 
 /// Card type. Maps recognized cards, and validates their pattern and length.
-#[derive(PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[non_exhaustive]
 pub enum Type {
     // Debit
@@ -51,7 +51,7 @@ pub enum Type {
 }
 
 /// Validate error. Maps possible validation errors (eg. card number format invalid).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[non_exhaustive]
 pub enum ValidateError {
     InvalidFormat,
@@ -134,7 +134,7 @@ impl Type {
 }
 
 /// Card validation utility. Used to validate a provided card number (length and Luhn checksum).
-#[derive(PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Validate {
     pub card_type: Type,
 }
