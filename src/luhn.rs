@@ -5,20 +5,20 @@
 // In an effort to reduce the amount of dependencies in the `card-validate` library.
 
 pub fn valid(number: &str) -> bool {
-    let mut checksum = 0;
-
     let r_chars = number.chars().rev();
     let range = 1..=number.chars().count();
     let iter = range.zip(r_chars);
 
-    for (i, c) in iter {
+    let checksum = iter.fold(0, |mut checksum, (i, c)| {
         let is_odd = i % 2 == 1;
         if is_odd {
             checksum += checksum_modifier_odd(c);
         } else {
             checksum += checksum_modifier_even(c);
-        }
-    }
+        };
+
+        checksum
+    });
 
     checksum % 10 == 0
 }
